@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Tembak-menembak</title>
+<style>
+    canvas {
+        border: 1px solid black;
+        display: block;
+        margin: 0 auto;
+    }
+    
+    #restartBtn {
+        display: block;
+        margin: 20px auto;
+    }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas" width="600" height="500"></canvas>
+<button id="restartBtn" style="display: none;">Main Lagi</button>
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Objek pemain
+    const playerImage = new Image();
+    playerImage.src = 'pesawat.png'; // Ganti dengan path gambar pemain
+    const playerWidth = 100;
+    const playerHeight = 60;
+    let playerX = canvas.width / 2 - playerWidth / 2;
+    const playerY = canvas.height - playerHeight - 20; // Agar tidak terlalu dekat dengan batas bawah
+    const playerSpeed = 10;
+
+    // Objek peluru
+    const bullet = {
+        x: 0,
+        y: canvas.height - 30,
+        width: 10,
+        height: 10,
+        color: 'red',
+        speed: 7,
+        isFired: false
+    };
+
+    // Objek musuh
+    const enemyImage = new Image();
+    enemyImage.src = 'musuh.png'; // Ganti dengan path gambar musuh
+    const enemyWidth = 50;
+    const enemyHeight = 50;
+    let enemies = [];
+
+    // Skor
+    let score = 0;
+
+    // Flag untuk menandai apakah permainan sedang berlangsung
+    let isGameRunning = true;
+
+    // Mendeteksi tombol yang ditekan
+    document.addEventListener('keydown', (event) => {
+        if (isGameRunning) {
+            if (event.code === 'Space' && !bullet.isFired) {
+                bullet.isFired = true;
+                bullet.x = playerX + playerWidth / 2 - bullet.width / 2;
+                bullet.y = playerY;
+            } else if (event.code === 'ArrowLeft') {
+                playerX -= playerSpeed;
+            } else if (event.code === 'ArrowRight') {
+                playerX += playerSpeed;
+            }
+        }
+    });
+
+    // Fungsi untuk membuat musuh baru
+    function createEnemy() {
+        const enemy = {
+            x: Math.random() * (canvas.width - enemyWidth),
+            y: 0,
+            width: enemyWidth,
+            height: enemyHeight,
+            speed: 3,
+            isVisible: true
+        };
+        enemies.push(enemy);
+    }
+
+    // Menggambar pemain
+    function drawPlayer() {
+        ctx.drawImage(playerImage, playerX, playerY, playerWidth, playerHeight);
+    }
+
+    // Menggambar peluru
+    function drawBullet() {
+        if (bullet.isFired) {
+            ctx.fillStyle = bullet.color;
+            ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+            bullet.y -= bullet.speed;
+
+            // Jika peluru mencapai batas atas layar
+            if (bullet.y < 0) {
+                bullet.isFired = false;
+            }
+        }
+    }
+
+    // Menggambar musuh
+    function drawEnemies() {
+        for (let i = 0; i < enemies.length; i++) {
+            const enemy = enemies[i];
+            if (enemy.isVisible) {
+                ctx.drawImage(enemyImage, enemy.x, enemy.y, enemy.width, enemy.height);
+                enemy.y += enemy.speed;
+
+                // Jika musuh mencapai batas bawah layar
+                if (enemy.y > canvas.height) {
+                    enemies.splice(i, 1); // Menghapus musuh
+                    i--;
+                }
+
+                // Deteksi tabrakan dengan peluru
+                if (bullet.isFired && bullet.x < enemy.x + enemy.width &&
+                    bullet.x + bullet.width > enemy.x && bullet.y < enemy.y + enemy.height &&
+                    bullet.y + bullet.height > enemy.y) {
+                    enemies.splice(i, 1); // Menghapus musuh
+                    bullet.isFired = false;
+                    score++; // Menambah skor
+                    i--;
+                }
+
+                // Deteksi tabrakan dengan pemain
+                if (enemy.y + enemy.height > playerY &&
+                    enemy.x + enemy.width > playerX &&
+                    enemy.x < playerX + playerWidth &&
+                    enemy.isVisible) {
+                    endGame();
+                }
+            }
+        }
+    }
+
+    // Menggambar skor
+    function drawScore() {
+        ctx.fillStyle = 'black';
+        ctx.font = '20px Arial';
+        ctx.fillText('Score: ' + score, 10, 30);
+    }
+
+    // Menghentikan permainan
+    function endGame() {
+        isGameRunning = false;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'black';
+        ctx.font = '30px Arial';
+        ctx.fillText('Anda kalah, Skor anda: ' + score, canvas.width / 2 - 180, canvas.height / 2);
+        bullet.isFired = false;
+        enemies = [];
+        document.getElementById('restartBtn').style.display = 'block';
+    }
+
+    // Mulai lagi
+    document.getElementById('restartBtn').addEventListener('click', () => {
+        isGameRunning = true;
+        score = 0;
+        playerX = canvas.width / 2 - playerWidth / 2;
+        document.getElementById('restartBtn').style.display = 'none';
+        update();
+    });
+
+    // Memperbarui tampilan
+    function update() {
+        if (isGameRunning) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPlayer();
+            drawBullet();
+            drawEnemies();
+            drawScore();
+            requestAnimationFrame(update);
+        }
+    }
+
+    // Memulai permainan
+    update();
+
+    // Membuat musuh baru setiap 2 detik
+    setInterval(createEnemy, 2000);
+</script>
+</body>
+</html>

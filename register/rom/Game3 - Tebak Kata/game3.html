@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tebak Kata</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('tebakkata.png');
+            background-color: #f2f2f2;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        #wordDisplay {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 50px;
+            padding: 10px;
+            margin-right: 10px;
+            border: none;
+            border-bottom: 2px solid #555;
+            text-align: center;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #007bff;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #message {
+            color: red;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tebak Kata</h1>
+        <p id="wordDisplay"></p>
+        <p>Clue: <span id="clueDisplay"></span></p>
+        <p>Masukkan huruf:</p>
+        <input type="text" id="guessInput">
+        <button onclick="checkGuess()">Tebak!</button>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        const words = [
+            { word: "pemrograman", clue: "Membuat aplikasi perangkat lunak" },
+            { word: "javascript", clue: "Bahasa skrip untuk pengembangan web" },
+            { word: "html", clue: "Bahasa markup untuk membuat halaman web" },
+            { word: "css", clue: "Bahasa styling untuk halaman web" },
+            { word: "python", clue: "Bahasa pemrograman tingkat tinggi" },
+            { word: "komputer", clue: "Perangkat elektronik untuk pengolahan data" },
+            { word: "kode", clue: "Instruksi untuk komputer" },
+            { word: "pengembang", clue: "Orang yang membuat aplikasi perangkat lunak" }
+        ];
+
+        const randomIndex = Math.floor(Math.random() * words.length);
+        const selectedWordObj = words[randomIndex];
+        const selectedWord = selectedWordObj.word;
+        const clue = selectedWordObj.clue;
+        let displayWord = "";
+
+        for (let i = 0; i < selectedWord.length; i++) {
+            displayWord += "_ ";
+        }
+
+        document.getElementById("wordDisplay").textContent = displayWord.trim();
+        document.getElementById("clueDisplay").textContent = clue;
+
+        function checkGuess() {
+            const guess = document.getElementById("guessInput").value.toLowerCase();
+            if (guess.length !== 1) {
+                alert("Masukkan hanya satu huruf!");
+                return;
+            }
+
+            let newDisplayWord = "";
+            let correctGuess = false;
+
+            for (let i = 0; i < selectedWord.length; i++) {
+                if (selectedWord[i] === guess) {
+                    newDisplayWord += guess + " ";
+                    correctGuess = true;
+                } else {
+                    newDisplayWord += displayWord[2 * i] + " ";
+                }
+            }
+
+            if (!correctGuess) {
+                document.getElementById("message").textContent = "Huruf ini tidak ada dalam kata.";
+            } else {
+                displayWord = newDisplayWord;
+                document.getElementById("wordDisplay").textContent = displayWord.trim();
+                document.getElementById("message").textContent = "";
+            }
+
+            if (displayWord.indexOf("_") === -1) {
+                alert("Selamat! Anda berhasil menebak kata!");
+                location.reload(); // Untuk memulai permainan baru setelah berhasil menebak kata
+            }
+
+            document.getElementById("guessInput").value = "";
+        }
+    </script>
+</body>
+</html>

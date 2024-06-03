@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Coding</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f2f2f2;
+        }
+
+        .container {
+            background-color: #1796ff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        #question {
+            margin-bottom: 20px;
+        }
+
+        #options {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .option {
+            margin: 10px;
+            padding: 10px 20px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .option.correct {
+            background-color: #8bc34a; /* Hijau */
+        }
+
+        .option.wrong {
+            background-color: #f44336; /* Merah */
+        }
+
+        .option:hover {
+            background-color: #f2f2f2;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kuis Coding</h1>
+        <div id="question">Apa singkatan dari HTML?</div>
+        <div id="options">
+            <div class="option" onclick="checkAnswer(this)">HyperText Markup Language</div>
+            <div class="option" onclick="checkAnswer(this)">Hyperlink Text Markup Language</div>
+            <div class="option" onclick="checkAnswer(this)">Hyperlinking Text Markup</div>
+            <div class="option" onclick="checkAnswer(this)">Hypertext Markup Link</div>
+        </div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: 'Apa singkatan dari HTML?',
+                options: ['HyperText Markup Language', 'Hyperlink Text Markup Language', 'Hyperlinking Text Markup', 'Hypertext Markup Link'],
+                correctAnswer: 'HyperText Markup Language'
+            },
+            {
+                question: 'Apa singkatan dari CSS?',
+                options: ['Cascading Style Sheet', 'Creative Style Sheet', 'Colorful Style Sheet', 'Computer Style Sheet'],
+                correctAnswer: 'Cascading Style Sheet'
+            },
+            {
+                question: 'Apa singkatan dari JS?',
+                options: ['JavaScript', 'JavaSource', 'JavaText', 'JavaStyle'],
+                correctAnswer: 'JavaScript'
+            },
+            {
+                question: 'Siapa pencipta Python?',
+                options: ['Guido van Rossum', 'Dennis Ritchie', 'Bjarne Stroustrup', 'James Gosling'],
+                correctAnswer: 'Guido van Rossum'
+            },
+            {
+                question: 'Apa singkatan dari API?',
+                options: ['Application Programming Interface', 'Advanced Programming Interface', 'Application Program Interface', 'Advanced Program Interface'],
+                correctAnswer: 'Application Programming Interface'
+            },
+            {
+                question: 'Apa singkatan dari HTTP?',
+                options: ['Hypertext Transfer Protocol', 'Hypertext Transmission Protocol', 'Hypertext Transport Protocol', 'Hypertext Transmission Process'],
+                correctAnswer: 'Hypertext Transfer Protocol'
+            },
+            {
+                question: 'Apa fungsi dari CSS?',
+                options: ['Mengatur tata letak dan tampilan halaman web', 'Mengelola basis data', 'Menjalankan kode JavaScript', 'Membuat konten dinamis'],
+                correctAnswer: 'Mengatur tata letak dan tampilan halaman web'
+            },
+            {
+                question: 'Siapa penemu JavaScript?',
+                options: ['Brendan Eich', 'Bill Gates', 'Steve Jobs', 'Larry Page'],
+                correctAnswer: 'Brendan Eich'
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
+
+        function showQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            document.getElementById('question').textContent = currentQuestion.question;
+
+            // Perbarui opsi jawaban
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = ''; // Kosongkan kontainer opsi
+
+            currentQuestion.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                optionElement.textContent = option;
+                optionElement.setAttribute('onclick', 'checkAnswer(this)');
+                optionsContainer.appendChild(optionElement);
+            });
+        }
+
+        function checkAnswer(option) {
+            const selectedAnswer = option.textContent;
+            const currentQuestion = questions[currentQuestionIndex];
+            const resultElement = document.getElementById('result');
+
+            if (selectedAnswer === currentQuestion.correctAnswer) {
+                resultElement.textContent = 'Benar!';
+                option.classList.add('correct');
+                correctAnswers++;
+            } else {
+                resultElement.textContent = 'Salah!';
+                option.classList.add('wrong');
+                wrongAnswers++;
+            }
+
+            setTimeout(() => {
+                resultElement.textContent = '';
+                option.classList.remove('correct', 'wrong');
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    showQuestion();
+                } else {
+                    showScore();
+                }
+            }, 1000);
+        }
+
+        function showScore() {
+            document.getElementById('question').textContent = 'Kuis selesai!';
+            document.getElementById('options').innerHTML = '';
+            const resultElement = document.getElementById('result');
+            resultElement.innerHTML = `Total Jawaban Benar: ${correctAnswers}<br>Total Jawaban Salah: ${wrongAnswers}`;
+        }
+
+        showQuestion();
+    </script>
+</body>
+</html>
